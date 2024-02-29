@@ -21,15 +21,19 @@ class Draggable extends React.Component {
     onDrag: () => {}
   };
 
-  state = {
-    drag: null
-  };
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+    this.state = {
+      drag: null
+    };
+  }
 
   componentWillUnmount() {
     this.cleanUp();
   }
 
-  onMouseDown = (e) => {
+  onMouseDown = e => {
     const drag = this.props.onDragStart(e);
     if (e.preventDefault) {
       e.preventDefault();
@@ -39,15 +43,18 @@ class Draggable extends React.Component {
       return;
     }
 
-    window.addEventListener('mouseup', this.onMouseUp);
-    window.addEventListener('mousemove', this.onMouseMove);
-    window.addEventListener('touchend', this.onMouseUp);
-    window.addEventListener('touchmove', this.onMouseMove);
+    const doc = this.myRef.current.ownerDocument;
+    const win = doc.defaultView || doc.parentWindow;
+
+    win.addEventListener('mouseup', this.onMouseUp);
+    win.addEventListener('mousemove', this.onMouseMove);
+    win.addEventListener('touchend', this.onMouseUp);
+    win.addEventListener('touchmove', this.onMouseMove);
 
     this.setState({ drag });
   };
 
-  onMouseMove = (e) => {
+  onMouseMove = e => {
     if (this.state.drag === null) {
       return;
     }
@@ -59,17 +66,19 @@ class Draggable extends React.Component {
     this.props.onDrag(e);
   };
 
-  onMouseUp = (e) => {
+  onMouseUp = e => {
     this.cleanUp();
     this.props.onDragEnd(e, this.state.drag);
     this.setState({ drag: null });
   };
 
   cleanUp = () => {
-    window.removeEventListener('mouseup', this.onMouseUp);
-    window.removeEventListener('mousemove', this.onMouseMove);
-    window.removeEventListener('touchend', this.onMouseUp);
-    window.removeEventListener('touchmove', this.onMouseMove);
+    const doc = this.myRef.current.ownerDocument;
+    const win = doc.defaultView || doc.parentWindow;
+    win.removeEventListener('mouseup', this.onMouseUp);
+    win.removeEventListener('mousemove', this.onMouseMove);
+    win.removeEventListener('touchend', this.onMouseUp);
+    win.removeEventListener('touchmove', this.onMouseMove);
   };
 
   getKnownDivProps = () => {
@@ -78,10 +87,13 @@ class Draggable extends React.Component {
 
   render() {
     return (
-      <div {...this.getKnownDivProps()}
+      <div
+        {...this.getKnownDivProps()}
         onMouseDown={this.onMouseDown}
         onTouchStart={this.onMouseDown}
-        className="react-grid-HeaderCell__draggable" />
+        className="react-grid-HeaderCell__draggable"
+        ref={this.myRef}
+      />
     );
   }
 }

@@ -1,7 +1,7 @@
 {
-  "name": "react-data-grid",
-  "private": true,
-  "description": "Data grid for React",
+  "name": "react-data-grid-gdc",
+  "description": "Data grid for React, forked version to works with React Portal in a new window",
+  "version": "6.1.1",
   "main": "src/index.js",
   "scripts": {
     "docs": "gulp docs:create",
